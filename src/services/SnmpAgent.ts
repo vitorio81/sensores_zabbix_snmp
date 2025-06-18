@@ -39,7 +39,7 @@ function registerNewSensors() {
 }
 
 // Checa e registra novos sensores a cada 10 segundos
-setInterval(registerNewSensors, 300000);
+setInterval(registerNewSensors, 10000);
 
 agent.listen({ family: "udp4", port: 161 });
 console.log("Agente SNMP rodando na porta 161");

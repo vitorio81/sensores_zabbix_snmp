@@ -45,10 +45,5 @@ class TemperatureChecker {
             execute(); // inicia o ciclo
         });
     }
-    // Exemplo de próxima função
-    static proximaFuncao(request) {
-        console.log("Sensores filtrados:", request.authData);
-        // ...faça o que precisar com os sensores filtrados
-    }
 }
 exports.TemperatureChecker = TemperatureChecker;
