@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TemperatureChecker = void 0;
 const ModelRequestSensores_1 = require("../model/ModelRequestSensores");
 const GetSensores_1 = require("../services/GetSensores");
-const ControllerSensorToZabbix_1 = require("./ControllerSensorToZabbix");
+const DataSensores_1 = require("../model/DataSensores");
 class TemperatureChecker {
     static start() {
         return __awaiter(this, arguments, void 0, function* (intervalMs = 60000) {
@@ -28,7 +28,12 @@ class TemperatureChecker {
                     filtered.forEach((item) => {
                         authData[item.entity_id] = item.state;
                     });
-                    yield ControllerSensorToZabbix_1.ControllerSensorToZabbix.process({ authData });
+                    for (const [sensorId, temperatura] of Object.entries(authData)) {
+                        DataSensores_1.sensorsData[sensorId] = temperatura;
+                        for (const [id, value] of Object.entries(DataSensores_1.sensorsData)) {
+                            console.log(`Sensor ${id} - Temperatura: ${value}`);
+                        }
+                    }
                 }
                 catch (error) {
                     console.error("Erro ao verificar sensores:", error);

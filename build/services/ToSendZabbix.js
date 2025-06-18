@@ -15,18 +15,21 @@ const env_1 = require("../config/env");
 class ToSendZabbix {
     static sendTrapperValue(sensorId, temperature) {
         return __awaiter(this, void 0, void 0, function* () {
-            const cmd = `zabbix_sender -z ${env_1.config.zabbixServer} -s "${env_1.config.zabbixHostSensores}" -k ${sensorId} -o ${temperature}`;
-            (0, child_process_1.exec)(cmd, (error, stdout, stderr) => {
-                if (error) {
-                    console.error(`Erro ao enviar para o Zabbix: ${error.message}`);
-                    return;
-                }
-                if (stderr) {
-                    console.error(`stderr: ${stderr}`);
-                    return;
-                }
-                console.log(`stdout: ${stdout}`);
-            });
+            const servers = (env_1.config.zabbixServer || "").split(",").map((s) => s.trim());
+            for (const server of servers) {
+                const cmd = `zabbix_sender -z ${server} -s "${env_1.config.zabbixHostSensores}" -k ${sensorId} -o ${temperature}`;
+                (0, child_process_1.exec)(cmd, (error, stdout, stderr) => {
+                    if (error) {
+                        console.error(`Erro ao enviar para o Zabbix: ${error.message}`);
+                        return;
+                    }
+                    if (stderr) {
+                        console.error(`stderr: ${stderr}`);
+                        return;
+                    }
+                    console.log(`stdout: ${stdout}`);
+                });
+            }
         });
     }
 }

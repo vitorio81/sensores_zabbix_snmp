@@ -1,6 +1,6 @@
 import { RequestSensoresPayload } from "../model/ModelRequestSensores";
 import { AuthApi } from "../services/GetSensores";
-import { ControllerSensorToZabbix } from "./ControllerSensorToZabbix";
+import { sensorsData } from "../model/DataSensores";
 
 interface Request {
   authData?: {
@@ -28,8 +28,12 @@ export class TemperatureChecker {
         filtered.forEach((item: any) => {
           authData[item.entity_id] = item.state;
         });
-
-        await ControllerSensorToZabbix.process({ authData });
+        for (const [sensorId, temperatura] of Object.entries(authData) as [string, string][]) {
+          sensorsData[sensorId] = temperatura;
+          for (const [id, value] of Object.entries(sensorsData)){
+            console.log(`Sensor ${id} - Temperatura: ${value}`);
+          }
+        }
       } catch (error) {
         console.error("Erro ao verificar sensores:", error);
       } finally {

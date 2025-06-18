@@ -10,14 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ControllerSensorToZabbix = void 0;
-const ToSendZabbix_1 = require("../services/ToSendZabbix");
 class ControllerSensorToZabbix {
     static process(request) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("⏳ Iniciando processo de envio para o Zabbix...");
             try {
                 for (const [sensorId, temperature] of Object.entries(request.authData || {})) {
-                    ToSendZabbix_1.ToSendZabbix.sendTrapperValue(sensorId, temperature);
+                    console.log(`${sensorId}: ${temperature}`);
                 }
             }
             catch (error) {
