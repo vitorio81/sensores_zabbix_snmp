@@ -28,11 +28,16 @@ export class TemperatureChecker {
         filtered.forEach((item: any) => {
           authData[item.entity_id] = item.state;
         });
-        for (const [sensorId, temperatura] of Object.entries(authData) as [string, string][]) {
+        for (const [sensorId, temperatura] of Object.entries(authData) as [
+          string,
+          string
+        ][]) {
           sensorsData[sensorId] = temperatura;
-          for (const [id, value] of Object.entries(sensorsData)){
-            console.log(`Sensor ${id} - Temperatura: ${value}`);
-          }
+        }
+
+        // Agora imprime só uma vez a lista completa
+        for (const [id, value] of Object.entries(sensorsData)) {
+          console.log(`Sensor ${id} - Temperatura: ${value}`);
         }
       } catch (error) {
         console.error("Erro ao verificar sensores:", error);

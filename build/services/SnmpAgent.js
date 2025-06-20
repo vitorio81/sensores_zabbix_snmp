@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const net_snmp_1 = __importDefault(require("net-snmp"));
 const DataSensores_1 = require("../model/DataSensores");
-const env_1 = require("../config/env");
 // Mapeamento OID -> sensorId
 const sensorOids = {
     "1.3.6.1.4.1.53864.1.1.0": "sensor.monitor_temperatura_jardins_aju_temperatura",
@@ -16,7 +15,7 @@ const sensorOids = {
 };
 // Cria o agente SNMP
 // @ts-ignore
-const agent = net_snmp_1.default.createAgent({}, (error, data) => {
+const agent = net_snmp_1.default.createAgent({ port: 161 }, (error, data) => {
     if (error) {
         console.error("Erro no SNMP Agent:", error);
     }
@@ -34,8 +33,3 @@ for (const [oid, sensorId] of Object.entries(sensorOids)) {
         },
     });
 }
-// ou use process.env.PORT || 161
-const port = env_1.config.port || 161;
-agent.listen({ family: "udp4", port: port }, () => {
-    console.log(`SNMP Agent escutando na porta ${port} UDP`);
-});

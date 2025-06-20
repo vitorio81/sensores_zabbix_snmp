@@ -1,6 +1,5 @@
 import snmp from "net-snmp";
 import { sensorsData } from "../model/DataSensores";
-import { config } from "../config/env";
 
 // Interfaces para tipagem mínima
 interface SNMPRequest {
@@ -25,7 +24,7 @@ const sensorOids: { [oid: string]: string } = {
 
 // Cria o agente SNMP
 // @ts-ignore
-const agent = snmp.createAgent({}, (error, data) => {
+const agent = snmp.createAgent({ port: 161 }, (error, data) => {
   if (error) {
     console.error("Erro no SNMP Agent:", error);
   }
@@ -44,8 +43,3 @@ for (const [oid, sensorId] of Object.entries(sensorOids)) {
     },
   });
 }
- // ou use process.env.PORT || 161
- const port = config.port || 161;
-agent.listen({ family: "udp4", port: port }, () => {
-  console.log(`SNMP Agent escutando na porta ${port} UDP`);
-});

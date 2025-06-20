@@ -30,9 +30,10 @@ class TemperatureChecker {
                     });
                     for (const [sensorId, temperatura] of Object.entries(authData)) {
                         DataSensores_1.sensorsData[sensorId] = temperatura;
-                        for (const [id, value] of Object.entries(DataSensores_1.sensorsData)) {
-                            console.log(`Sensor ${id} - Temperatura: ${value}`);
-                        }
+                    }
+                    // Agora imprime só uma vez a lista completa
+                    for (const [id, value] of Object.entries(DataSensores_1.sensorsData)) {
+                        console.log(`Sensor ${id} - Temperatura: ${value}`);
                     }
                 }
                 catch (error) {
