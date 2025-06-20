@@ -1,5 +1,6 @@
 import snmp from "net-snmp";
 import { sensorsData } from "../model/DataSensores";
+import { config } from "../config/env";
 
 // Interfaces para tipagem mínima
 interface SNMPRequest {
@@ -43,4 +44,8 @@ for (const [oid, sensorId] of Object.entries(sensorOids)) {
     },
   });
 }
-
+ // ou use process.env.PORT || 161
+ const port = config.port || 161;
+agent.listen({ family: "udp4", port: port }, () => {
+  console.log(`SNMP Agent escutando na porta ${port} UDP`);
+});
