@@ -13,10 +13,11 @@ exports.TemperatureChecker = void 0;
 const ModelRequestSensores_1 = require("../model/ModelRequestSensores");
 const GetSensores_1 = require("../services/GetSensores");
 const DataSensores_1 = require("../model/DataSensores");
+const FileService_1 = require("../services/FileService");
 class TemperatureChecker {
     static start() {
         return __awaiter(this, arguments, void 0, function* (intervalMs = 60000) {
-            console.log("⏳ Iniciando verificação dos sensores..");
+            console.log("⏳ Iniciando verificação dos sensores...");
             const execute = () => __awaiter(this, void 0, void 0, function* () {
                 try {
                     console.log("🔍 Verificando sensores...");
@@ -28,23 +29,38 @@ class TemperatureChecker {
                     filtered.forEach((item) => {
                         authData[item.entity_id] = item.state;
                     });
-                    for (const [sensorId, temperatura] of Object.entries(authData)) {
-                        DataSensores_1.sensorsData[sensorId] = temperatura;
+                    for (const [sensorId, value] of Object.entries(authData)) {
+                        DataSensores_1.sensorsData[sensorId] = value;
                     }
-                    // Agora imprime só uma vez a lista completa
+                    // Agora chama o serviço para gravar os arquivos
+                    TemperatureChecker.writeSensorFiles(DataSensores_1.sensorsData);
+                    // Log para conferência
+                    console.log("📋 Dados atualizados:");
                     for (const [id, value] of Object.entries(DataSensores_1.sensorsData)) {
-                        console.log(`Sensor ${id} - Temperatura: ${value}`);
+                        console.log(`Sensor ${id} -> Valor: ${value}`);
                     }
                 }
                 catch (error) {
-                    console.error("Erro ao verificar sensores:", error);
+                    console.error("❌ Erro ao verificar sensores:", error);
                 }
                 finally {
-                    setTimeout(execute, intervalMs); // agenda a próxima execução
+                    setTimeout(execute, intervalMs);
                 }
             });
-            execute(); // inicia o ciclo
+            execute();
         });
+    }
+    static writeSensorFiles(data) {
+        const sensoresMap = {
+            "temp_jardins.txt": "sensor.monitor_temperatura_jardins_aju_temperatura",
+            "umid_jardins.txt": "sensor.monitor_temperatura_jardins_aju_umidade",
+            "temp_itabaiana.txt": "sensor.monitor_de_temperatura_itabaiana_temperatura",
+            "umid_itabaiana.txt": "sensor.monitor_de_temperatura_itabaiana_umidade",
+        };
+        for (const [fileName, sensorId] of Object.entries(sensoresMap)) {
+            const value = data[sensorId] || "0";
+            FileService_1.FileService.writeFile(fileName, value.toString());
+        }
     }
 }
 exports.TemperatureChecker = TemperatureChecker;
