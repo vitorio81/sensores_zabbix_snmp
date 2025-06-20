@@ -5,38 +5,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const net_snmp_1 = __importDefault(require("net-snmp"));
 const DataSensores_1 = require("../model/DataSensores");
-// Função para gerar OIDs automaticamente a partir do índice
-function generateOid(index) {
-    // Exemplo: base OID + índice incremental
-    return `1.3.6.1.4.1.53864.1.${index}.0`;
-}
-const agent = net_snmp_1.default.createAgent();
-const registeredSensors = new Set();
-function registerNewSensors() {
-    const sensorIds = Object.keys(DataSensores_1.sensorsData);
-    sensorIds.forEach((sensorId, idx) => {
-        if (!registeredSensors.has(sensorId)) {
-            const oid = generateOid(idx + 1);
-            agent.registerProvider({
-                oid,
-                type: net_snmp_1.default.ObjectType.OctetString,
-                get: function (provider, request) {
-                    const value = DataSensores_1.sensorsData[sensorId] || "0";
-                    request.done(net_snmp_1.default.pdu.varbinds([
-                        {
-                            oid,
-                            type: net_snmp_1.default.ObjectType.OctetString,
-                            value: value.toString(),
-                        },
-                    ]));
-                },
-            });
-            registeredSensors.add(sensorId);
-            console.log(`Registrado sensor ${sensorId} no OID ${oid}`);
-        }
+// Mapeamento OID -> sensorId
+const sensorOids = {
+    "1.3.6.1.4.1.53864.1.1.0": "sensor.monitor_temperatura_jardins_aju_temperatura",
+    "1.3.6.1.4.1.53864.1.2.0": "sensor.monitor_temperatura_jardins_aju_umidade",
+    "1.3.6.1.4.1.53864.1.3.0": "sensor.monitor_de_temperatura_itabaiana_temperatura",
+    "1.3.6.1.4.1.53864.1.4.0": "sensor.monitor_de_temperatura_itabaiana_umidade",
+    // Adicione mais sensores se desejar
+};
+// Cria o agente SNMP
+// @ts-ignore
+const agent = net_snmp_1.default.createAgent({}, (error, data) => {
+    if (error) {
+        console.error("Erro no SNMP Agent:", error);
+    }
+});
+// Registra os sensores
+for (const [oid, sensorId] of Object.entries(sensorOids)) {
+    agent.registerProvider({
+        name: sensorId,
+        oid,
+        type: net_snmp_1.default.ObjectType.OctetString,
+        get: (provider, request) => {
+            const value = DataSensores_1.sensorsData[sensorId] || "0";
+            console.log(`Consulta SNMP -> ${sensorId}: ${value}`);
+            request.done(value.toString());
+        },
     });
 }
-// Checa e registra novos sensores a cada 10 segundos
-setInterval(registerNewSensors, 300000);
-agent.listen({ family: "udp4", port: 161 });
-console.log("Agente SNMP rodando na porta 161");
+console.log("🚀 Agente SNMP rodando na porta 161");

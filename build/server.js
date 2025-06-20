@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // src/server.ts
 const express_1 = __importDefault(require("express"));
 const ContrllerGetSensores_1 = require("./controller/ContrllerGetSensores");
+require("./services/SnmpAgent");
 const app = (0, express_1.default)();
 const PORT = 3000;
 app.listen(PORT, () => {

@@ -1,6 +1,7 @@
 // src/server.ts
 import express from "express";
 import { TemperatureChecker } from "./controller/ContrllerGetSensores";
+import "./services/SnmpAgent"
 
 const app = express();
 const PORT = 3000;
